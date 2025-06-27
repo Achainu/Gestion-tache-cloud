@@ -1,0 +1,23 @@
+version: "3.8"
+
+services:
+  frontend:
+    build: ./gestion-taches-frontend
+    ports:
+      - "80:80"
+    networks:
+      - appnet
+    depends_on:
+      - gestion-taches
+
+  gestion-taches:
+    build: ./gestion-taches
+    ports:
+      - "3000:3000"
+    networks:
+      - appnet
+    environment:
+      - MONGO_URI=mongodb+srv://yaoalberic93:mkg65lZkwfhxlAYj@cluster0.dwyfdju.mongodb.net/taches?retryWrites=true&w=majority&appName=Cluster0
+
+networks:
+  appnet:

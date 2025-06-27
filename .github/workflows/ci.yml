@@ -1,0 +1,44 @@
+# .github/workflows/ci.yml
+
+name: CI - Build Frontend + Backend
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name:  Cloner le dépôt
+      uses: actions/checkout@v3
+
+    - name:  Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18
+
+    # --- Backend ---
+    - name:  Installer les dépendances backend
+      run: |
+        cd gestion-taches
+        npm install
+
+    - name:  Construire l'image Docker backend
+      run: |
+        cd gestion-taches
+        docker build -t gestion-taches-backend .
+
+    # --- Frontend ---
+    - name:  Installer les dépendances frontend
+      run: |
+        cd gestion-taches-frontend
+        npm install
+
+    - name:  Construire l'image Docker frontend
+      run: |
+        cd gestion-taches-frontend
+        docker build -t gestion-taches-frontend .

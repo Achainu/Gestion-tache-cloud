@@ -1,16 +1,15 @@
 import React, { useState } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Accueil from './pages/Accueil';
 import Navbar from './components/Navbar.jsx';
 import AddTache from './components/AddTache';
 import ListeTaches from './components/ListeTaches';
 import EditTache from './components/EditTache';
-import Login from './pages/login.jsx';
+import Login from './pages/Login.jsx';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { UserContext } from './context/contexts.jsx';
 
-// Composant Layout sans la navbar
 const Layout = ({ children }) => {
   return <>{children}</>;
 };
@@ -42,6 +41,7 @@ function App() {
         <Layout>
           <ToastContainer position="top-right" autoClose={3000} />
           <Routes>
+            <Route path="/" element={<Navigate to="/login" />} />
             <Route path="/login" element={<Login />} />
             <Route path="/navbar" element={<Navbar />} />
             <Route path="/accueil" element={<Accueil />} />

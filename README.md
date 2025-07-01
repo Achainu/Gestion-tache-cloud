@@ -28,3 +28,5 @@ Une application cloud-native de gestion de tâches, construite avec Node.js (bac
 ```bash
 git clone https://github.com/Achainu/Gestion-tache-cloud.git
 cd gestion-taches
+# docker compose up -d --build   pour executé le docker compose
+

@@ -1,5 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState, useContext } from 'react';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -10,7 +9,9 @@ import {
   XCircleIcon,
   CheckCircleIcon,
 } from '@heroicons/react/24/outline';
+
 import { UserContext } from '../context/contexts.jsx';
+import { updateTache } from '../api/tacheApi'; // ✅ Import API sécurisée
 
 const EditTache = ({ onTacheUpdated }) => {
   const navigate = useNavigate();
@@ -28,18 +29,24 @@ const EditTache = ({ onTacheUpdated }) => {
     e.preventDefault();
 
     if (valeurUtiliserPartout.dateFin && valeurUtiliserPartout.dateFin < valeurUtiliserPartout.dateDebut) {
-      toast.error("La date de fin doit être égale ou postérieure à la date de début");
+      toast.error("❌ La date de fin doit être postérieure à la date de début");
       return;
     }
 
     try {
       setLoading(true);
-      const res = await axios.put(`http://localhost:3000/api/taches/${valeurUtiliserPartout._id}`, valeurUtiliserPartout);
-      toast.success("Tâche mise à jour avec succès");
-      onTacheUpdated && onTacheUpdated(res.data);
+      const updated = await updateTache(valeurUtiliserPartout._id, valeurUtiliserPartout); // ✅ Appel API avec token
+      toast.success("✅ Tâche mise à jour avec succès");
+      onTacheUpdated && onTacheUpdated(updated);
       navigate('/liste');
     } catch (err) {
-      toast.error("Erreur lors de la mise à jour");
+      if (err.response?.status === 401) {
+        toast.error("⛔ Session expirée, veuillez vous reconnecter.");
+      } else if (err.response?.status === 422) {
+        toast.error("❌ Erreur de validation. Vérifiez les champs.");
+      } else {
+        toast.error("🚫 Erreur lors de la mise à jour.");
+      }
     } finally {
       setLoading(false);
     }
@@ -48,7 +55,7 @@ const EditTache = ({ onTacheUpdated }) => {
   if (!valeurUtiliserPartout) {
     return (
       <p className="text-center text-red-500 mt-10">
-        Aucune tâche sélectionnée pour modification.
+        ⚠️ Aucune tâche sélectionnée pour modification.
       </p>
     );
   }
@@ -153,8 +160,8 @@ const EditTache = ({ onTacheUpdated }) => {
           </button>
           <button
             type="submit"
-            className="px-5 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg shadow"
             disabled={loading}
+            className="px-5 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg shadow"
           >
             <CheckCircleIcon className="h-5 w-5 inline" /> Enregistrer
           </button>
